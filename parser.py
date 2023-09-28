@@ -1,4 +1,5 @@
 import json
+import time
 
 from selenium import webdriver
 from selenium.common import NoSuchElementException
@@ -35,22 +36,26 @@ def parse(group):
                 teacher = el.find_element(By.CSS_SELECTOR, ".rasp-grid-min-teachers").text
                 aud = el.find_elements(By.TAG_NAME, "span")[3].text
                 tm = el.find_elements(By.TAG_NAME, "span")[0].text
+                tp = el.find_element(By.CSS_SELECTOR, ".pb-2").text
                 schedule[days[j]].append({
                     "name": name,
                     "teacher": teacher,
                     "time": tm,
-                    "aud": aud
+                    "aud": aud,
+                    "type": tp
                 })
-            except NoSuchElementException:
+            except NoSuchElementException as e:
                 schedule[days[j]].append({
                     "name": "Окно",
                     "teacher": "",
                     "time": "",
-                    "aud": ""
+                    "aud": "",
+                    "type": ""
                 })
     driver.close()
     return schedule
 
 
 if __name__ == "__main__":
-    print(json.dumps(parse("К0409-22"), indent=4, ensure_ascii=False))
+    parse_data = parse("К0409-22")
+    print(json.dumps(parse_data, indent=4, ensure_ascii=False))
