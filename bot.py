@@ -330,7 +330,7 @@ async def display_schedule(query: CallbackQuery):
             tm = lesson["time"]
             if not tm:
                 tm = times[i]
-            sch_text += f"{i + 1}. <b>{lesson['name']}</b>\n    {tm}\n    <u>{lesson['aud']}</u>\n    {lesson['teacher']}".strip() + "\n\n"
+            sch_text += f"{i + 1}. <b>{lesson['name']}</b>\n    {tm}\n    <u>{lesson['aud']}</u>\n    {lesson['teacher']}\n    {lesson['type']}".strip() + "\n\n"
         schedule_text = days_ru[days.index(query.data)] + ":\n" + sch_text
         await query.message.edit_text(schedule_text, reply_markup=keyboard, parse_mode="HTML")
         await query.answer()
