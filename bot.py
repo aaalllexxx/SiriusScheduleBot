@@ -41,6 +41,33 @@ SHOP_TOKEN = env["SHOP_API_TOKEN"]
 times = ["9:00-10:30", "10:45-12:15", "13:15-14:45", "15:00-16:30", "16:45-18:15", "18:30-20:00", "", "", ""]
 
 
+def test():
+    return env.get("MODE") and env["MODE"] == "TEST"
+
+
+async def true():
+    return True
+
+
+def test_check_function(func):
+    def decorator(*args, **kwargs):
+        if env.get("MODE") and env["MODE"] == "TEST":
+            return func(*args, **kwargs)
+        return true()
+
+    return decorator
+
+
+def test_bot_function(func):
+    def decorator(*args, **kwargs):
+        if env.get("MODE") and env["MODE"] == "TEST":
+            return func(*args, **kwargs)
+        return False
+
+    return decorator
+
+
+@test_check_function
 async def check_buy(message):
     user = get_user(message.chat.id, session)
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Оплатить", callback_data="buy")]])
@@ -93,7 +120,8 @@ async def process_successful_payment(message: Message):
     await message.answer("Оплата успешна.", reply_markup=keyboard)
 
 
-@dp.message(lambda x: not check_access(x, 1))
+@dp.message(lambda x: not check_access(x, 1) and test())
+@test_bot_function
 async def no_payment(message: Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Оплатить", callback_data="buy")]])
     return await message.answer(
