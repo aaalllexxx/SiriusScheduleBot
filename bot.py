@@ -32,8 +32,8 @@ days_ru = ["Понедельник", "Вторник", "Среда", "Четве
 
 levels = {
     "user": 0,
-    "duty": 5,
-    "admin": 10
+    "duty": 50,
+    "admin": 100
 }
 
 DEFAULT_PRICE = LabeledPrice(label='Базовая подписка на месяц', amount=6000)
@@ -70,7 +70,7 @@ def help(message: Message):
     text = "Вот доступные команды:\n\n" \
            "/schedule - моё расписание\n"
     if user.access_level >= levels["duty"]:
-        text += "/edit - изменить расписание\n"
+        text += ""
 
     if user.access_level >= levels["admin"]:
         text += "/users - список пользователей\n" \
