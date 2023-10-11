@@ -27,3 +27,4 @@ class User(Base):
     access_level = Column(Integer)
     state = Column(String)
     buy_expires = Column(String)
+    test_period_status = Column(Integer, default=0)

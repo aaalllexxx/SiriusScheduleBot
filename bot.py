@@ -1,5 +1,5 @@
 import asyncio
-import datetime
+import uuid
 import json
 import os
 import time
@@ -15,11 +15,14 @@ from sqlalchemy.orm import sessionmaker
 from database import Base, User, Group
 from helpers import get_user, get_group
 from checker import Checker, print
+from yookassa import Configuration, Payment
 
 Checker(os.getpid())
-
+api_endpoint = "https://api.yookassa.ru/v3/"
 env = dotenv_values(".env")
 bot = Bot(env["TOKEN"])
+
+test_days = env.get("TEST_DAYS") or 1 / 60 / 60 / 24 * 10
 
 dp = Dispatcher()
 engine = create_engine(env["SQLITE_PATH"])
@@ -37,8 +40,11 @@ levels = {
 }
 
 DEFAULT_PRICE = LabeledPrice(label='Базовая подписка на месяц', amount=6000)
-SHOP_TOKEN = env["SHOP_API_TOKEN"]
+SHOP_TOKEN = env["YOOKASSA_TOKEN"]
 times = ["9:00-10:30", "10:45-12:15", "13:15-14:45", "15:00-16:30", "16:45-18:15", "18:30-20:00", "", "", ""]
+Configuration.account_id = int(env["SHOP_ID"])
+Configuration.secret_key = SHOP_TOKEN
+key = str(uuid.uuid4())
 
 
 def test():
@@ -85,9 +91,25 @@ def check_state(message, state):
     return get_user(message.chat.id, session).state.split("::")[0] == state
 
 
+async def check_payment(payment_id):
+    payment = json.loads((Payment.find_one(payment_id)).json())
+    while payment['status'] == 'pending':
+        payment = json.loads((Payment.find_one(payment_id)).json())
+        await asyncio.sleep(3)
+
+    if payment['status'] == 'succeeded':
+        print("SUCCSESS RETURN")
+        print(payment)
+        return True
+    else:
+        print("BAD RETURN")
+        print(payment)
+        return False
+
+
 def check_access(message, access):
     user = get_user(message.chat.id, session)
-    if user.access_level >= access:
+    if user and user.access_level >= access:
         return True
     return False
 
@@ -106,58 +128,97 @@ def help(message: Message):
     return text
 
 
-@dp.message(F.content_type == "successful_payment")
-async def process_successful_payment(message: Message):
-    print('successful_payment:')
-    keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Меню")]], resize_keyboard=True)
-    pmnt = json.loads(message.successful_payment.model_dump_json())
-    user = get_user(message.chat.id, session)
-    user.access_level = 1
-    if payload := pmnt.get("invoice_payload"):
-        if "month" in payload:
-            user.buy_expires = str(round(time.time() + 2678400))
-    session.commit()
-    await message.answer("Оплата успешна.", reply_markup=keyboard)
+@dp.message(lambda x: x.chat.id != 5237472052 and test())
+async def tech_work(message):
+    return await message.answer("Ведутся технические работы, ожидайте.")
 
 
-@dp.message(lambda x: not check_access(x, 1) and test())
-@test_bot_function
+@dp.callback_query(lambda x: x.message.chat.id != 5237472052 and test())
+async def tech_callback(query):
+    return await query.message.answer("Ведутся технические работы, ожидайте.")
+
+
+@dp.message(lambda x: not check_access(x, 1))
 async def no_payment(message: Message):
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Оплатить", callback_data="buy")]])
+    user = get_user(message.chat.id, session)
+    k = [[InlineKeyboardButton(text="Оплатить", callback_data="buy")]]
+    if user.test_period_status == 0:
+        k.append([InlineKeyboardButton(text="Активировать пробный период", callback_data="start_test")])
+        await message.answer("Вам доступны 3 дня пробного периода.")
+    keyboard = InlineKeyboardMarkup(inline_keyboard=k)
     return await message.answer(
         "К сожалению, сервер, на котором хостится бот не бесплатный, так что оплатите, пожалуйста, подписку😁",
         reply_markup=keyboard)
 
 
+@dp.callback_query(F.data == "start_test")
+async def start_test_period(query: CallbackQuery):
+    global test_days
+    await query.answer()
+    user = get_user(query.message.chat.id, session)
+    if user.test_period_status == 0:
+        keyboard = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[[KeyboardButton(text="Меню")]])
+        user.test_period_status = 1
+        user.buy_expires = str(int(round(time.time()) + test_days * 60 * 60 * 24))
+        user.access_level = 2
+        session.commit()
+        await query.message.answer("Пробная подписка активна.", keyboard=keyboard)
+
+
 @dp.callback_query(F.data == "buy")
-async def buy(message: Message | CallbackQuery):
-    await message.answer()
-    if isinstance(message, CallbackQuery):
-        message = message.message
-    if SHOP_TOKEN.split(":")[1] == "TEST":
-        await bot.send_invoice(
-            message.chat.id,
-            title="Базовая подписка на месяц",
-            description="Вам станут доступны просмотр расписания и оповещения об изменении расписания",
-            provider_token=SHOP_TOKEN,
-            currency='rub',
-            is_flexible=False,  # True если конечная цена зависит от способа доставки
-            prices=[DEFAULT_PRICE],
-            start_parameter='buy-bot',
-            payload='default-buy-month'
-        )
-    else:
-        await bot.send_invoice(
-            message.chat.id,
-            title="Базовая подписка на месяц",
-            description="Вам станут доступны просмотр расписания и оповещения об изменении расписания",
-            provider_token=SHOP_TOKEN,
-            currency='rub',
-            is_flexible=False,
-            prices=[DEFAULT_PRICE],
-            start_parameter='buy-bot',
-            payload='default-buy-month'
-        )
+async def buy(query: CallbackQuery):
+    await query.answer()
+    user = get_user(query.message.chat.id, session)
+    message = query.message
+    uid = uuid.uuid4()
+    payment = Payment.create({
+        "id": f"{uid}",
+        "amount": {
+            "value": "60.00",
+            "currency": "RUB"
+        },
+        "confirmation": {
+            "type": "redirect",
+            "return_url": "https://t.me/SiriusElzhurBot"
+        },
+        "capture": True,
+        "receipt": {
+            "customer": {
+                "email": "a.aabdelnur@mail.ru"
+            },
+            "items": [
+                {
+                    "description": "Подписка на месяц",
+                    "quantity": "1.00",
+                    "amount": {
+                        "value": "60.00",
+                        "currency": "RUB"
+                    },
+                    "vat_code": "4",
+                    "payment_mode": "full_prepayment",
+                    "payment_subject": "marked",
+                    "mark_mode": 0,
+                    "mark_code_info":
+                        {
+                            "gs_1m": "DFGwNDY0MDE1Mzg2NDQ5MjIxNW9vY2tOelDFuUFwJh05MUVFMDYdOTJXK2ZaMy9uTjMvcVdHYzBjSVR3NFNOMWg1U2ZLV0dRMWhHL0UrZi8ydkDvPQ=="
+                        },
+                    "measure": "piece"
+                }
+            ]
+        },
+        "description": "Подписка на месяц",
+    }, key)
+    keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[[InlineKeyboardButton(text="Оплатить", url=payment.confirmation.confirmation_url)]])
+    await message.answer("Ссылка для оплаты:", reply_markup=keyboard)
+    if await check_payment(payment.id):
+        print('successful_payment:')
+        keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Меню")]], resize_keyboard=True)
+        user = get_user(message.chat.id, session)
+        user.access_level = 1
+        user.buy_expires = str(round(time.time() + 2678400))
+        session.commit()
+        await message.answer("Оплата успешна.", reply_markup=keyboard)
 
 
 @dp.message(Command("start"))
@@ -376,7 +437,7 @@ async def process_pre_checkout_query(pre_checkout_query: PreCheckoutQuery):
 
 
 async def main():
-    print("start")
+    print("start\n")
     await dp.start_polling(bot)
     print("bye!")
 
