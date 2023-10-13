@@ -22,7 +22,7 @@ api_endpoint = "https://api.yookassa.ru/v3/"
 env = dotenv_values(".env")
 bot = Bot(env["TOKEN"])
 
-test_days = env.get("TEST_DAYS") or 1 / 60 / 60 / 24 * 10
+test_days = env.get("TEST_DAYS") or 3 / 60 / 60 / 24 * 10
 
 dp = Dispatcher()
 engine = create_engine(env["SQLITE_PATH"])
@@ -44,7 +44,7 @@ SHOP_TOKEN = env["YOOKASSA_TOKEN"]
 times = ["9:00-10:30", "10:45-12:15", "13:15-14:45", "15:00-16:30", "16:45-18:15", "18:30-20:00", "", "", ""]
 Configuration.account_id = int(env["SHOP_ID"])
 Configuration.secret_key = SHOP_TOKEN
-key = str(uuid.uuid4())
+
 
 
 def test():
@@ -73,7 +73,6 @@ def test_bot_function(func):
     return decorator
 
 
-@test_check_function
 async def check_buy(message):
     user = get_user(message.chat.id, session)
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Оплатить", callback_data="buy")]])
@@ -142,9 +141,21 @@ async def tech_callback(query):
 async def no_payment(message: Message):
     user = get_user(message.chat.id, session)
     k = [[InlineKeyboardButton(text="Оплатить", callback_data="buy")]]
-    if user.test_period_status == 0:
+    if user and user.test_period_status == 0:
         k.append([InlineKeyboardButton(text="Активировать пробный период", callback_data="start_test")])
         await message.answer("Вам доступны 3 дня пробного периода.")
+    else:
+        fname = message.from_user.first_name
+        lname = message.from_user.last_name
+        new_user = User(chat_id=message.chat.id,
+                        name=f"{fname if fname else ''}{' ' + lname if lname else ''}",
+                        group_id=0,
+                        access_level=0)
+        session.add(new_user)
+        session.commit()
+        k.append([InlineKeyboardButton(text="Активировать пробный период", callback_data="start_test")])
+        await message.answer("Вам доступны 3 дня пробного периода.")
+
     keyboard = InlineKeyboardMarkup(inline_keyboard=k)
     return await message.answer(
         "К сожалению, сервер, на котором хостится бот не бесплатный, так что оплатите, пожалуйста, подписку😁",
@@ -171,6 +182,7 @@ async def buy(query: CallbackQuery):
     user = get_user(query.message.chat.id, session)
     message = query.message
     uid = uuid.uuid4()
+    key = str(uuid.uuid4())
     payment = Payment.create({
         "id": f"{uid}",
         "amount": {
@@ -208,17 +220,20 @@ async def buy(query: CallbackQuery):
         },
         "description": "Подписка на месяц",
     }, key)
-    keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[[InlineKeyboardButton(text="Оплатить", url=payment.confirmation.confirmation_url)]])
-    await message.answer("Ссылка для оплаты:", reply_markup=keyboard)
-    if await check_payment(payment.id):
-        print('successful_payment:')
-        keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Меню")]], resize_keyboard=True)
-        user = get_user(message.chat.id, session)
-        user.access_level = 1
-        user.buy_expires = str(round(time.time() + 2678400))
-        session.commit()
-        await message.answer("Оплата успешна.", reply_markup=keyboard)
+    if payment:
+        keyboard = InlineKeyboardMarkup(
+            inline_keyboard=[[InlineKeyboardButton(text="Оплатить", url=payment.confirmation.confirmation_url)]])
+        await message.answer("Ссылка для оплаты:", reply_markup=keyboard)
+        if await check_payment(payment.id):
+            print('successful_payment:')
+            keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Меню")]], resize_keyboard=True)
+            user = get_user(message.chat.id, session)
+            user.access_level = 1
+            user.buy_expires = str(round(time.time() + 2678400))
+            session.commit()
+            await message.answer("Оплата успешна.", reply_markup=keyboard)
+    else:
+        await message.answer("Что-то не так, обратитесь к разработчику.")
 
 
 @dp.message(Command("start"))
