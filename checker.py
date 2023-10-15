@@ -3,6 +3,7 @@ import os
 import signal
 import sys
 import time
+from datetime import datetime
 from platform import system
 from threading import Thread
 
@@ -105,3 +106,8 @@ if __name__ != "__main__":
             file.write(
                 f"{Colors.OKBLUE}# log {filename.split(os.sep)[-1]} {Colors.ENDC} --[ {Colors.OKGREEN}{content}{', '.join(args)}{Colors.ENDC}")
         sys.stdout.write(f"{', '.join(args)}")
+        if not os.path.isfile("bot.log"):
+            with open("bot.log", "w") as file:
+                file.close()
+        with open("bot.log", "a") as file:
+            file.write(f"# {datetime.now()} | {', '.join(args)}\n")

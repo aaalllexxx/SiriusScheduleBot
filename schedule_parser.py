@@ -7,6 +7,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import bot
 from bot import session, days, days_ru
 from database import Group, User
+from checker import print
 from parser import parse
 
 start_time = time.time()
@@ -23,12 +24,9 @@ async def parse_schedule():
                 last = round(time.time() - start_time)
 
             if last % time_delta == 0:
-                await bot.bot.send_message(admin.chat_id, "Начинаю парсинг.")
                 groups = session.query(Group).all()
                 for group in groups:
-                    print(f"start parsing {group.name}")
                     sched = parse(group.name)
-                    print(f"finished parsing {group.name} with result {sched}")
                     if sched:
                         for day in days:
                             sc = json.dumps(sched[day], ensure_ascii=False)
@@ -40,15 +38,14 @@ async def parse_schedule():
                                         all_keyboard = InlineKeyboardMarkup(
                                             inline_keyboard=[
                                                 [InlineKeyboardButton(text="Посмотреть", callback_data="schedule")]])
+                                        print(f"schedule for {group.name} was set")
                                         await bot.bot.send_message(user.chat_id,
                                                                    f"Изменение в расписании на {days_ru[days.index(day)]}",
                                                                    reply_markup=all_keyboard)
                                     except Exception as e:
-                                        print(e)
-                        print(f"schedule for {group.name} was set")
-                await bot.bot.send_message(admin.chat_id, "Парсинг окончен")
+                                        print(f"exception while parsing: {e}")
         except Exception as e:
-            await bot.bot.send_message(admin.chat_id, str(e))
+            print(f"exception while parsing: {e}")
 
 
 if __name__ == "__main__":
