@@ -14,7 +14,7 @@ async def start(message: Message | CallbackQuery):
         user = get_user(message.chat.id, session)
     else:
         user = get_user(message.message.chat.id, session)
-        await message.answer()
+        await message.message.delete()
         message = message.message
     if not await check_buy(message):
         return await message.answer("Сначала оплатите подписку. Команда: /buy")
@@ -35,11 +35,7 @@ async def start(message: Message | CallbackQuery):
                         access_level=0)
         session.add(new_user)
         session.commit()
-    if isinstance(message, Message):
-        return await message.answer(f"Привет{', ' + name if name else ''}!", reply_markup=keyboard)
-    else:
-        await message.message.edit_text(f"Привет{', ' + name if name else ''}!", reply_markup=keyboard)
-        return await message.answer()
+    return await message.answer(f"Привет{', ' + name if name else ''}!", reply_markup=keyboard)
 
 
 @dp.message(lambda x: x.text.lower() == "меню")
