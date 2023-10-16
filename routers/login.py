@@ -11,7 +11,7 @@ async def login(message: Message):
     if len(args) >= 2:
         ident = int(args[1])
         replacements[message.chat.id] = ident
-        await message.answer(f"Теперь вы {get_user(message.chat.id, session).name}")
+        await message.answer(f"Теперь вы {get_user(message.chat.id).name}")
     else:
         await message.answer("Введи все нужные параметры. {id}")
 

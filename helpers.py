@@ -5,20 +5,20 @@ import time
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 from yookassa import Payment
 
-from database import User, Group
+from database import User, Group, Teacher
 from settings import session, levels, pairs, env
 
 replacements = {}
 
 
-def get_user(chat_id, session, check_rep=True) -> User:
+def get_user(chat_id, check_rep=True) -> User:
     if int(chat_id) in list(replacements) and check_rep:
         chat_id = str(replacements[chat_id])
     user = session.query(User).filter_by(chat_id=chat_id).first()
     return user or None
 
 
-def get_group(group_id, session) -> Group:
+def get_group(group_id) -> Group:
     group = session.query(Group).filter_by(id=group_id).first()
     return group or None
 
@@ -61,11 +61,15 @@ def test_bot_function(func):
     return decorator
 
 
+def get_teacher(chat_id):
+    return session.query(Teacher).filter_by(chat_id=chat_id).first()
+
+
 async def check_buy(message):
-    user = get_user(message.chat.id, session)
+    user = get_user(message.chat.id)
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Оплатить", callback_data="buy")]])
     if user and user.access_level > 0:
-        if len(user.buy_expires) > 2 and int(user.buy_expires) > round(time.time()):
+        if user.buy_expires and len(user.buy_expires) > 2 and int(user.buy_expires) > round(time.time()):
             return True
         user.access_level = 0
         await message.answer("Ваша подписка закончена(", keyboard=keyboard)
@@ -75,7 +79,7 @@ async def check_buy(message):
 
 
 def check_state(message, state):
-    return get_user(message.chat.id, session).state.split("::")[0] == state
+    return get_user(message.chat.id).state.split("::")[0] == state
 
 
 async def check_payment(payment_id, chat_id):
@@ -95,14 +99,14 @@ async def check_payment(payment_id, chat_id):
 
 
 def check_access(message, access, check_rep=True):
-    user = get_user(message.chat.id, session, check_rep)
+    user = get_user(message.chat.id, check_rep)
     if user and user.access_level >= access:
         return True
     return False
 
 
 def help(message: Message):
-    user: User = get_user(message.chat.id, session)
+    user: User = get_user(message.chat.id)
     text = "Вот доступные команды:\n\n" \
            "/schedule - моё расписание\n"
     if user.access_level >= 10:

@@ -4381,3 +4381,34 @@ DevTools listening on ws://127.0.0.1:57558/devtools/browser/53f8e3ac-b687-42a5-a
 console.error: ({})
 1695974082342	Marionette	INFO	Stopped listening on port 57569
 Dynamically enable window occlusion 1
+1697445940583	geckodriver	INFO	Listening on 127.0.0.1:52049
+1697445943638	mozrunner::runner	INFO	Running command: "C:\\Users\\aaabd\\.cache\\selenium\\firefox\\win64\\118.0.2\\firefox.exe" "--marionette" "-headless" "--rem ... 0" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\aaabd\\AppData\\Local\\Temp\\rust_mozprofileGbtHmf"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1697445944288	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1697445944375	Marionette	INFO	Listening on port 52059
+WebDriver BiDi listening on ws://127.0.0.1:52050
+Read port: 52059
+1697445944665	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+DevTools listening on ws://127.0.0.1:52050/devtools/browser/204a9aed-4a2f-4ba6-8956-2bd1d6838073
+1697445967645	Marionette	WARN	Ignoring event 'pageshow' because document has an invalid readyState of 'uninitialized'.
+1697445967891	Marionette	INFO	Stopped listening on port 52059
+Dynamically enable window occlusion 1
+1697445973510	geckodriver	INFO	Listening on 127.0.0.1:60389
+1697445976540	mozrunner::runner	INFO	Running command: "C:\\Users\\aaabd\\.cache\\selenium\\firefox\\win64\\118.0.2\\firefox.exe" "--marionette" "-headless" "--rem ... 0" "--remote-allow-hosts" "localhost" "-no-remote" "-profile" "C:\\Users\\aaabd\\AppData\\Local\\Temp\\rust_mozprofileNBgJAB"
+*** You are running in headless mode.
+console.warn: services.settings: Ignoring preference override of remote settings server
+console.warn: services.settings: Allow by setting MOZ_REMOTE_SETTINGS_DEVTOOLS=1 in the environment
+1697445977097	Marionette	INFO	Marionette enabled
+Dynamically enable window occlusion 0
+1697445977171	Marionette	INFO	Listening on port 60397
+WebDriver BiDi listening on ws://127.0.0.1:60390
+Read port: 60397
+1697445977404	RemoteAgent	WARN	TLS certificate errors will be ignored for this session
+[GFX1-]: RenderCompositorSWGL failed mapping default framebuffer, no dt
+console.error: ({})
+DevTools listening on ws://127.0.0.1:60390/devtools/browser/e6f26484-f1ed-4d7c-9ab8-64cb37b6bd73

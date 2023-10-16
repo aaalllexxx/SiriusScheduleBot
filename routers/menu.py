@@ -11,9 +11,9 @@ from settings import dp, session
 @dp.callback_query(F.data == "menu")
 async def start(message: Message | CallbackQuery):
     if isinstance(message, Message):
-        user = get_user(message.chat.id, session)
+        user = get_user(message.chat.id)
     else:
-        user = get_user(message.message.chat.id, session)
+        user = get_user(message.message.chat.id)
         await message.message.delete()
         message = message.message
     if not await check_buy(message):
@@ -42,7 +42,7 @@ async def start(message: Message | CallbackQuery):
 async def menu(message: Message):
     if not await check_buy(message):
         return await message.answer("Сначала оплатите подписку. Команда: /buy")
-    user = get_user(message.chat.id, session)
+    user = get_user(message.chat.id)
     keyboard = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Функции⚙️", callback_data="help")],
                                                      [InlineKeyboardButton(text="Расписание🗓",
                                                                            callback_data="schedule")],

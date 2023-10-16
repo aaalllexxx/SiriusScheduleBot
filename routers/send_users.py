@@ -10,7 +10,7 @@ async def list_users(message: Message):
     if len(data) >= 3:
         to_id = data[1]
         text = " ".join(data[2:])
-        admin = get_user(message.chat.id, session, False)
+        admin = get_user(message.chat.id, False)
         await bot.send_message(to_id, f"Администратор {admin.name} отправил вам сообщение:\n{text}")
-        return await message.answer(f"Сообщение пользователю {get_user(to_id, session, False).name} отправлено.")
+        return await message.answer(f"Сообщение пользователю {get_user(to_id, False).name} отправлено.")
     return await message.answer("/send {to_id} {text}")

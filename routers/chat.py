@@ -20,10 +20,10 @@ async def create_chat(message: Message):
     global replacements
     args = message.text.replace("{", "").replace("}", "").split()
     if len(args) >= 2:
-        part = get_user(args[1], session, False)
+        part = get_user(args[1], False)
         if part.access_level > 0:
             pairs.append(Pair(message.chat.id, int(args[1])))
-            admin = get_user(message.chat.id, session, False)
+            admin = get_user(message.chat.id, False)
             await bot.send_message(args[1],
                                    f"Администратор {admin.name} добавил вас в личный чат.\nОн увидит все последующие сообщения."
                                    f"\nЧтобы выйти из чата, пропишите /stop")

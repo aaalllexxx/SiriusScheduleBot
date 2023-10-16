@@ -13,7 +13,7 @@ from settings import session, dp, test_days
 
 @dp.message(lambda x: not check_access(x, 1))
 async def no_payment(message: Message):
-    user = get_user(message.chat.id, session)
+    user = get_user(message.chat.id)
     k = [[InlineKeyboardButton(text="Оплатить", callback_data="buy")]]
     if user and user.test_period_status == 0:
         k.append([InlineKeyboardButton(text="Активировать пробный период", callback_data="start_test")])
@@ -40,7 +40,7 @@ async def no_payment(message: Message):
 async def start_test_period(query: CallbackQuery):
     global test_days
     await query.answer()
-    user = get_user(query.message.chat.id, session)
+    user = get_user(query.message.chat.id)
     if user.test_period_status == 0:
         keyboard = ReplyKeyboardMarkup(resize_keyboard=True, keyboard=[[KeyboardButton(text="Меню")]])
         user.test_period_status = 1
@@ -100,7 +100,7 @@ async def buy(query: CallbackQuery):
         if await check_payment(payment.id, message.chat.id):
             print('successful_payment:')
             keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Меню")]], resize_keyboard=True)
-            user = get_user(message.chat.id, session)
+            user = get_user(message.chat.id)
             user.access_level = 1
             user.buy_expires = str(round(time.time() + 2678400))
             session.commit()

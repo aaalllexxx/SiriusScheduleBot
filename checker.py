@@ -105,7 +105,7 @@ if __name__ != "__main__":
         with open(".checker_stdout", "w+") as file:
             file.write(
                 f"{Colors.OKBLUE}# log {filename.split(os.sep)[-1]} {Colors.ENDC} --[ {Colors.OKGREEN}{content}{', '.join(args)}{Colors.ENDC}")
-        sys.stdout.write(f"{', '.join(args)}")
+        sys.stdout.write(f"{', '.join(args)}\n")
         if not os.path.isfile("bot.log"):
             with open("bot.log", "w") as file:
                 file.close()
