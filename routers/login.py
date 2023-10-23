@@ -1,7 +1,7 @@
 from aiogram.types import Message
 
 from helpers import check_access, get_user, replacements
-from settings import session, dp
+from settings import dp
 
 
 @dp.message(lambda x: check_access(x, 10, False) and ("/login" in x.text))

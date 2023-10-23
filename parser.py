@@ -13,7 +13,7 @@ def parse(group):
     schedule = {}
     options = Options()
     options.add_argument("-headless")
-    driver = webdriver.Edge(options=options)
+    driver = webdriver.Firefox(options=options)
     link = "https://schedule.siriusuniversity.ru/"
     try:
         driver.get(link)
@@ -23,6 +23,7 @@ def parse(group):
             (By.XPATH, '/html/body/div/div/div[2]/div/div/div/div[2]/div[2]/div[1]/div[1]/div/ul/li')))
         button.click()
         frame = driver.find_element(By.XPATH, "/html/body/div/div/div[2]/div/div/div/div[3]/div[2]/div[2]/table/tbody")
+        time.sleep(5)
         WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tr")))
         rows = frame.find_elements(By.CSS_SELECTOR, "tr")
         days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
@@ -62,28 +63,38 @@ def parse_teacher(teacher):
     schedule = {}
     options = Options()
     options.add_argument("-headless")
-    driver = webdriver.Edge(options=options)
+    driver = webdriver.Firefox(options=options)
     link = "https://schedule.siriusuniversity.ru/teacher"
     try:
         driver.get(link)
+        time.sleep(5)
         el = driver.find_element(By.XPATH, '//*[@id="searchListInput"]')
         el.send_keys(teacher)
+        print(teacher)
         button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable(
             (By.XPATH, '/html/body/div/div/div[2]/div/div/div/div[2]/div[2]/div[1]/div[1]/div/ul/li')))
         button.click()
         frame = driver.find_element(By.XPATH, "/html/body/div/div/div[2]/div/div/div/div[3]/div[2]/div[2]/table/tbody")
+        time.sleep(5)
         WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, "tr")))
         rows = frame.find_elements(By.CSS_SELECTOR, "tr")
         days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
         for i, row in enumerate(rows):
+
             data = row.find_elements(By.CSS_SELECTOR, "td")
             for j, el in enumerate(data):
                 if not schedule.get(days[j]):
                     schedule[days[j]] = []
                 try:
                     name = el.find_element(By.CSS_SELECTOR, ".rasp-grid-min-discipline").text
-                    group = el.find_element(By.CSS_SELECTOR, ".rasp-grid-min-teachers").text
-                    aud = el.find_elements(By.TAG_NAME, "span")[3].text
+                    try:
+                        group = el.find_element(By.CSS_SELECTOR, ".rasp-grid-min-teachers").text
+                    except:
+                        group = ""
+                    if group:
+                        aud = el.find_elements(By.TAG_NAME, "span")[3].text
+                    else:
+                        aud = el.find_elements(By.TAG_NAME, "span")[4].text
                     tm = el.find_elements(By.TAG_NAME, "span")[0].text
                     tp = el.find_element(By.CSS_SELECTOR, ".pb-2").text
                     schedule[days[j]].append({
@@ -102,11 +113,12 @@ def parse_teacher(teacher):
                         "type": ""
                     })
         driver.close()
-    except:
+    except Exception as e:
+        print(e)
         driver.close()
     return schedule
 
 
 if __name__ == "__main__":
-    parse_data = parse_teacher("Жижонкова Маргарита Сергеевна")
+    parse_data = parse_teacher("Гомзяков Борис Игоревич")
     print(json.dumps(parse_data, indent=4, ensure_ascii=False))

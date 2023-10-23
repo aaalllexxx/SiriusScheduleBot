@@ -35,6 +35,8 @@ async def start(message: Message | CallbackQuery):
                         access_level=0)
         session.add(new_user)
         session.commit()
+    user.state = ""
+    session.commit()
     return await message.answer(f"Привет{', ' + name if name else ''}!", reply_markup=keyboard)
 
 

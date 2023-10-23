@@ -3,7 +3,7 @@ import time
 from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from database import User, Teacher
-from helpers import check_access, get_user
+from helpers import check_access, get_user, get_teacher
 from settings import dp, bot, session
 import json
 
@@ -47,7 +47,9 @@ async def accept_teacher(query: CallbackQuery):
     user = get_user(teacher_id)
     teacher = Teacher(chat_id=user.chat_id)
     user.access_level = 5
-    session.add(teacher)
+    user.buy_expires = 99999999999999999
+    if not get_teacher(user.chat_id):
+        session.add(teacher)
     session.commit()
     await query.message.answer("Учитель добавлен.")
     await bot.send_message(user.chat_id,

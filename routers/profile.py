@@ -7,6 +7,28 @@ from helpers import check_buy, get_user, get_group, check_state, get_teacher
 from settings import dp, session
 
 
+def get_inline_for_groups(user_id):
+    user = get_user(user_id)
+
+    user_group = get_group(user.group_id)
+    groups = [group.name for group in session.query(Group).all()]
+    groups.sort()
+    keys = []
+    for i in range(0, len(groups), 2):
+        group = groups[i]
+        if group == user_group.name:
+            keys.append([InlineKeyboardButton(text=f"{group}✅", callback_data=group),
+                         InlineKeyboardButton(text=f"{groups[i + 1]}❌", callback_data=groups[i + 1])])
+        elif groups[i + 1] == user_group.name:
+            keys.append([InlineKeyboardButton(text=f"{group}❌", callback_data=group),
+                         InlineKeyboardButton(text=f"{groups[i + 1]}✅", callback_data=groups[i + 1])])
+        else:
+            keys.append([InlineKeyboardButton(text=f"{group}❌", callback_data=group),
+                         InlineKeyboardButton(text=f"{groups[i + 1]}❌", callback_data=groups[i + 1])])
+    keys.append([InlineKeyboardButton(text="Готово", callback_data="menu")])
+    return keys
+
+
 @dp.callback_query(F.data == "profile_edit")
 async def edit_callback(query: CallbackQuery):
     if not await check_buy(query.message):
@@ -51,18 +73,14 @@ async def edit_name(query: CallbackQuery):
 
 @dp.callback_query(F.data == "edit_group")
 async def edit_group(query: CallbackQuery):
+    await query.answer()
     if not await check_buy(query.message):
-        await query.answer()
         return await query.message.answer("Сначала оплатите подписку. Команда: /buy")
 
-    keys = []
-    groups = session.query(Group).all()
-    groups.sort(key=lambda x: x.name)
-    for group in groups:
-        keys.append([KeyboardButton(text=group.name)])
-    keyboard = ReplyKeyboardMarkup(keyboard=keys, resize_keyboard=True)
+    user = get_user(query.message.chat.id)
+    keyboard = InlineKeyboardMarkup(inline_keyboard=get_inline_for_groups(user.chat_id))
+    await query.message.delete()
     await query.message.answer("В какой группе вы учитесь?", reply_markup=keyboard)
-    await query.answer()
     user = get_user(query.message.chat.id)
     user.state = "set_group"
     session.commit()
@@ -72,10 +90,9 @@ async def edit_group(query: CallbackQuery):
 async def set_name(message: Message):
     if not await check_buy(message):
         return await message.answer("Сначала оплатите подписку. Команда: /buy")
-
     user = get_user(message.chat.id)
     if user:
-        user.name = message.text
+        user.name = message.text[:101]
         teacher = get_teacher(message.chat.id)
         if teacher:
             teacher.name = user.name
@@ -84,20 +101,19 @@ async def set_name(message: Message):
         await message.answer("Имя установлено.")
 
 
-@dp.message(lambda x: check_state(x, state="set_group"))
-async def set_group(message: Message):
+@dp.callback_query(lambda x: check_state(x, state="set_group"))
+async def set_group(query: CallbackQuery):
+    message = query.message
     if not await check_buy(message):
         return await message.answer("Сначала оплатите подписку. Команда: /buy")
 
     user = get_user(message.chat.id)
-    keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Меню")]], resize_keyboard=True)
     if user:
-        name = "".join(message.text.lower().replace("k", "к").replace("m", "м").capitalize().split())
-        group = session.query(Group).filter_by(name=name).first()
-        if group:
-            user.group_id = group.id
-            await message.answer("Группа установлена.", reply_markup=keyboard)
-        else:
-            await message.answer("Такой группы нет в списке.", reply_markup=keyboard)
-        user.state = ""
+        if query.data == get_group(user.group_id).name:
+            return await query.answer("Вы уже выбрали эту группу.")
+
+        user.group_id = session.query(Group).filter_by(name=query.data).first().id
         session.commit()
+        keyboard = InlineKeyboardMarkup(inline_keyboard=get_inline_for_groups(user.chat_id))
+        await query.answer("Группа выбрана.")
+        return await message.edit_text("Выберите груупу:", reply_markup=keyboard)

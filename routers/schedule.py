@@ -46,6 +46,8 @@ async def display_schedule(query: CallbackQuery):
         ])
     if teacher:
         sch = json.loads(getattr(teacher, query.data) or "[]")
+        while sch[-1]["name"] == "Окно":
+            sch.pop(-1)
         sch_text = ""
         for i, lesson in enumerate(sch):
             tm = lesson["time"]
@@ -62,6 +64,8 @@ async def display_schedule(query: CallbackQuery):
         return await query.answer()
     if user and group:
         sch = json.loads(getattr(group, query.data) or "[]")
+        while sch[-1]["name"] == "Окно":
+            sch.pop(-1)
         sch_text = ""
         for i, lesson in enumerate(sch):
             tm = lesson["time"]

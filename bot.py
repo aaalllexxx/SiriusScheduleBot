@@ -2,6 +2,7 @@ import asyncio
 import os
 from checker import Checker, print
 from settings import dp, bot
+import routers.admin
 import routers.list_users_message
 import routers.send_users
 import routers.login

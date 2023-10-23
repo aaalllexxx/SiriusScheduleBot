@@ -22,7 +22,7 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
     chat_id = Column(String(32))
-    name = Column(String(512))
+    name = Column(String(100))
     group_id = Column(Integer, ForeignKey("groups.id", ondelete="CASCADE"))
     access_level = Column(Integer)
     state = Column(String)

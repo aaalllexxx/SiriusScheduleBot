@@ -2,7 +2,7 @@ import asyncio
 import json
 import time
 
-from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from yookassa import Payment
 
 from database import User, Group, Teacher
@@ -79,6 +79,8 @@ async def check_buy(message):
 
 
 def check_state(message, state):
+    if isinstance(message, CallbackQuery):
+        message = message.message
     return get_user(message.chat.id).state.split("::")[0] == state
 
 

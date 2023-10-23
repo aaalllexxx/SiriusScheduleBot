@@ -1,54 +1,52 @@
-# 2023-10-16 19:24:05.607474 | {}
-# 2023-10-16 19:24:05.619482 | parsing groups...
-# 2023-10-16 19:25:31.538443 | start
+# 2023-10-23 15:24:04.955146 | start
 
-# 2023-10-16 19:25:36.765874 | start parsing
-# 2023-10-16 19:25:36.771916 | parsing teachers...
-# 2023-10-16 19:25:55.929672 | {}
-# 2023-10-16 19:25:55.937713 | parsing groups...
-# 2023-10-16 19:26:16.089043 | start
+# 2023-10-23 15:27:19.548512 | start
 
-# 2023-10-16 19:26:20.965508 | start parsing
-# 2023-10-16 19:26:20.972570 | parsing teachers...
-# 2023-10-16 19:26:45.554735 | start parsing
-# 2023-10-16 19:26:45.561725 | parsing teachers...
-# 2023-10-16 19:27:00.107761 | exception while parsing: Message: WebDriver session does not exist, or is not active
-Stacktrace:
-RemoteError@chrome://remote/content/shared/RemoteError.sys.mjs:8:8
-WebDriverError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:189:5
-InvalidSessionIDError@chrome://remote/content/shared/webdriver/Errors.sys.mjs:444:5
-assert.that/<@chrome://remote/content/shared/webdriver/Assert.sys.mjs:485:13
-assert.session@chrome://remote/content/shared/webdriver/Assert.sys.mjs:37:4
-despatch@chrome://remote/content/marionette/server.sys.mjs:315:19
-execute@chrome://remote/content/marionette/server.sys.mjs:289:16
-onPacket/<@chrome://remote/content/marionette/server.sys.mjs:262:20
-onPacket@chrome://remote/content/marionette/server.sys.mjs:263:9
-_onJSONObjectReady/<@chrome://remote/content/marionette/transport.sys.mjs:494:20
+# 2023-10-23 15:29:05.282366 | start
 
-# 2023-10-16 19:28:23.262009 | start parsing
-# 2023-10-16 19:28:23.268009 | parsing teachers...
-# 2023-10-16 19:28:23.274064 | Жижонкова маргарита сергеевна
-# 2023-10-16 19:28:51.768660 | start parsing
-# 2023-10-16 19:28:51.775664 | parsing teachers...
-# 2023-10-16 19:29:02.282211 | {'monday': [{'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Иностранный язык', 'group': 'К0709-23/1', 'time': '10:45-12:15', 'aud': 'К_4', 'type': 'Практические занятия'}, {'name': 'Иностранный язык', 'group': 'К0709-23/2', 'time': '13:15-14:45', 'aud': 'К_10', 'type': 'Практические занятия'}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}], 'tuesday': [{'name': 'Английский для IT-специалистов', 'group': 'К0109-22', 'time': '09:00-10:30', 'aud': 'Гринатом', 'type': 'Практические занятия'}, {'name': 'Английский для IT-специалистов', 'group': 'К0409-22', 'time': '10:45-12:15', 'aud': 'Альфа 5.2', 'type': 'Практические занятия'}, {'name': 'Английский для IT-специалистов', 'group': 'К0609-22', 'time': '13:15-14:45', 'aud': 'Газпром нефть', 'type': 'Практические занятия'}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}], 'wednesday': [{'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Иностранный язык', 'group': 'К0709-23/3', 'time': '10:45-12:15', 'aud': 'К_2', 'type': 'Практические занятия'}, {'name': 'Английский для IT-специалистов', 'group': 'К0709-22/1', 'time': '13:15-14:45', 'aud': 'К_7', 'type': 'Практические занятия'}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}], 'thursday': [{'name': 'Иностранный язык (второй)', 'group': 'К1609-22/2', 'time': '09:00-10:30', 'aud': 'Росатом (СПД)', 'type': 'Практические занятия'}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Иностранный язык (второй)', 'group': 'К1609-22/1', 'time': '15:00-16:30', 'aud': 'Гринатом', 'type': 'Практические занятия'}], 'friday': [{'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}], 'saturday': [{'name': 'Иностранный язык (второй)', 'group': 'К1609-22/1', 'time': '09:00-10:30', 'aud': 'Альфа 4.5', 'type': 'Практические занятия'}, {'name': 'Иностранный язык (второй)', 'group': 'К1609-22/2', 'time': '10:45-12:15', 'aud': 'Аудитория №15', 'type': 'Практические занятия'}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}], 'sunday': [{'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}, {'name': 'Окно', 'group': '', 'time': '', 'aud': '', 'type': ''}]}
-# 2023-10-16 19:29:02.296989 | schedule for Жижонкова Маргарита Сергеевна was set
-# 2023-10-16 19:29:02.786709 | schedule for Жижонкова Маргарита Сергеевна was set
-# 2023-10-16 19:29:02.939637 | schedule for Жижонкова Маргарита Сергеевна was set
-# 2023-10-16 19:29:03.099367 | schedule for Жижонкова Маргарита Сергеевна was set
-# 2023-10-16 19:29:03.261845 | schedule for Жижонкова Маргарита Сергеевна was set
-# 2023-10-16 19:29:03.455844 | schedule for Жижонкова Маргарита Сергеевна was set
-# 2023-10-16 19:29:03.642845 | parsing groups...
-# 2023-10-16 19:29:17.247929 | start
+# 2023-10-23 15:31:11.288394 | start
 
-# 2023-10-16 19:30:55.062937 | start parsing
-# 2023-10-16 19:30:55.075943 | parsing teachers...
-# 2023-10-16 19:31:07.000021 | schedule for Стерлягов Сергей Геннадьевич was set
-# 2023-10-16 19:31:07.575010 | schedule for Стерлягов Сергей Геннадьевич was set
-# 2023-10-16 19:31:07.805034 | schedule for Стерлягов Сергей Геннадьевич was set
-# 2023-10-16 19:31:08.032052 | schedule for Стерлягов Сергей Геннадьевич was set
-# 2023-10-16 19:31:08.260012 | schedule for Стерлягов Сергей Геннадьевич was set
-# 2023-10-16 19:31:08.465015 | schedule for Стерлягов Сергей Геннадьевич was set
-# 2023-10-16 19:31:08.697011 | parsing groups...
-# 2023-10-16 19:36:15.772462 | start parsing
-# 2023-10-16 19:36:15.779389 | parsing teachers...
-# 2023-10-16 19:36:15.787445 | parsing groups...
+# 2023-10-23 15:31:38.854523 | start
+
+# 2023-10-23 15:36:36.161426 | start
+
+# 2023-10-23 15:38:11.347428 | start
+
+# 2023-10-23 15:38:27.924638 | start
+
+# 2023-10-23 15:41:10.718635 | start
+
+# 2023-10-23 15:42:19.564539 | start
+
+# 2023-10-23 15:43:11.523648 | start
+
+# 2023-10-23 15:43:53.405683 | start
+
+# 2023-10-23 15:46:18.569637 | start
+
+# 2023-10-23 15:46:52.400588 | start
+
+# 2023-10-23 15:48:00.891243 | start
+
+# 2023-10-23 15:51:05.767297 | start
+
+# 2023-10-23 15:52:16.724373 | start
+
+# 2023-10-23 15:53:20.230957 | start
+
+# 2023-10-23 15:54:13.416345 | start
+
+# 2023-10-23 16:00:46.770349 | start
+
+# 2023-10-23 16:06:58.159184 | start
+
+# 2023-10-23 16:07:16.011603 | start
+
+# 2023-10-23 16:37:14.378510 | start
+
+# 2023-10-23 16:41:33.881211 | start
+
+# 2023-10-23 16:43:17.921001 | start
+
+# 2023-10-23 16:44:53.651332 | start
+

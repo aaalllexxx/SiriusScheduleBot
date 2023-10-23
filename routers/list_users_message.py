@@ -21,7 +21,7 @@ async def list_users_message(message: Message):
     max_userID = max([len(u.chat_id) for u in users])
     msg = f"n | chat ID{' ' * (max_userID - 7)} | name\n"
     for j, user in enumerate(users):
-        msg += f"{j + 1} | {user.chat_id}{' ' * (max_userID - len(user.chat_id))} | {user.name}\n"
+        msg += f"{j + 1} | {user.chat_id}{' ' * (max_userID - len(user.chat_id))} | {user.name if len(user.name) < 50 else user.name[:50] + '...'}\n"
 
     await message.answer(msg, reply_markup=keyboard)
 
@@ -43,6 +43,6 @@ async def list_users(query: CallbackQuery):
         max_userID = max([len(u.chat_id) for u in users])
     msg = f"n | chat ID{' ' * (max_userID - 7)} | name\n"
     for j, user in enumerate(users):
-        msg += f"{i * count + j + 1} | {user.chat_id}{' ' * (max_userID - len(user.chat_id))} | {user.name}\n"
+        msg += f"{i * count + j + 1} | {user.chat_id}{' ' * (max_userID - len(user.chat_id))} | {user.name if len(user.name) < 50 else user.name[:50] + '...'}\n"
 
     await query.message.edit_text(msg, reply_markup=keyboard)
